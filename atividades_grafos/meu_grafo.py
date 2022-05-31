@@ -114,5 +114,97 @@ class MeuGrafo(GrafoListaAdjacencia):
 
         return True
 
+    def __gerarVerticesAdjacencentes(self):
+        '''
+        Gera dicionário com os vertices adjacentes de cada vértice do grafo
+        para otimizar a realização da DFS e da BFS.
+        '''
+        verticesAdjacentes = {}
+
+        for aresta in self.A:
+            arestaAtual = self.A[aresta]
+            if arestaAtual.getV1() not in verticesAdjacentes:
+                verticesAdjacentes[arestaAtual.getV1()] = [(arestaAtual.getV2(), aresta)]
+            else:
+                verticesAdjacentes[arestaAtual.getV1()].append((arestaAtual.getV2(), aresta))
+
+            if arestaAtual.getV2() not in verticesAdjacentes:
+                verticesAdjacentes[arestaAtual.getV2()] = [(arestaAtual.getV1(), aresta)]
+            else:
+                verticesAdjacentes[arestaAtual.getV2()].append((arestaAtual.getV1(), aresta))
+
+        return verticesAdjacentes
+
+    def __dfs_recursivo(self, V, dfs, verticesVisitados, verticesAdjacentes):
+        '''
+        Responsável por percorrer o grafo de modo recursivo
+        :param V: O vértice atual
+        :param dfs: Grafo que será construido pela DFS
+        :param verticesVisitados: Conjunto responsável por armazenar os
+        vértices já visitados durante a busca
+        :param verticesAdjacentes: Lista de Adjacência do grafo
+        '''
+        verticesVisitados.add(V)
+
+        for (verticeAdjacente, rotuloAresta) in verticesAdjacentes[V]:
+
+            if verticeAdjacente not in verticesVisitados:
+                dfs.adicionaAresta(rotuloAresta, V, verticeAdjacente)
+                self.__dfs_recursivo(verticeAdjacente, dfs, verticesVisitados, verticesAdjacentes)
+
+    def dfs(self, V=''):
+        '''
+        Provê um grafo gerado pela DFS partindo do vértice passado como parâmetro.
+        :param V: O vértice de partida
+        :return: Um objeto do tipo MeuGrafo com o grafo gerado
+        :raises: VerticeInvalidoException se o vértice não existe no grafo
+        '''
+        # O(n+m) -> n - Quantidade de vértices; m - Quantidade de arestas
+        if not self.existeVertice(V):
+            raise VerticeInvalidoException(f'O vértice {V} passado como parâmetro não existe.')
+
+        verticesAdjacentes = self.__gerarVerticesAdjacencentes()
+
+        dfs = MeuGrafo(self.N[::])
+        verticesVisitados = set()
+
+        if V not in verticesAdjacentes: return dfs
+
+        self.__dfs_recursivo(V, dfs, verticesVisitados, verticesAdjacentes)
+
+        return dfs
+
+    def bfs(self, V=''):
+        '''
+        Provê um grafo gerado pela BFS partindo do vértice passado como parâmetro.
+        :param V: O vértice de partida
+        :return: Um objeto do tipo MeuGrafo com o grafo gerado
+        :raises: VerticeInvalidoException se o vértice não existe no grafo
+        '''
+        # O(n+m) -> n - Quantidade de vértices; m- Quantidade de arestas
+        if not self.existeVertice(V):
+            raise VerticeInvalidoException(f'O vértice {V} passado como parâmetro não existe.')
+
+        bfs = MeuGrafo(self.N[::])
+
+        verticesVisitados = set([V])
+        fila = deque([V])
+
+        verticesAdjacentes = self.__gerarVerticesAdjacencentes()
+
+        if V not in verticesAdjacentes: return bfs
+
+        while len(fila) != 0:
+            verticeAtual = fila.popleft()
+
+            for (verticeAdjacente, rotuloAresta) in verticesAdjacentes[verticeAtual]:
+                if verticeAdjacente not in verticesVisitados:
+                    bfs.adicionaAresta(rotuloAresta, verticeAtual, verticeAdjacente)
+
+                    verticesVisitados.add(verticeAdjacente)
+                    fila.append(verticeAdjacente)
+
+        return bfs
+
     def dijkstra_drone(self, vi, vf, carga:int, carga_max:int, pontos_recarga:list()):
         pass
