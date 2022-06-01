@@ -2,6 +2,7 @@ import unittest
 from meu_grafo import *
 from bibgrafo.grafo_exceptions import *
 
+
 class TestGrafo(unittest.TestCase):
 
     def setUp(self):
@@ -108,6 +109,26 @@ class TestGrafo(unittest.TestCase):
         self.g_d.adicionaAresta('asd', 'A', 'B')
 
         self.g_d2 = MeuGrafo(['A', 'B', 'C', 'D'])
+
+        # Grafo de A à K
+        self.meuGrafo = MeuGrafo(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'])
+        self.meuGrafo.adicionaAresta("1", "A", "B")
+        self.meuGrafo.adicionaAresta("2", "A", "G")
+        self.meuGrafo.adicionaAresta("3", "A", "J")
+        self.meuGrafo.adicionaAresta("4", "K", "G")
+        self.meuGrafo.adicionaAresta("5", "K", "J")
+        self.meuGrafo.adicionaAresta("6", "J", "G")
+        self.meuGrafo.adicionaAresta("7", "J", "I")
+        self.meuGrafo.adicionaAresta("8", "G", "I")
+        self.meuGrafo.adicionaAresta("9", "G", "H")
+        self.meuGrafo.adicionaAresta("10", "H", "F")
+        self.meuGrafo.adicionaAresta("11", "F", "B")
+        self.meuGrafo.adicionaAresta("12", "B", "G")
+        self.meuGrafo.adicionaAresta("13", "B", "C")
+        self.meuGrafo.adicionaAresta("14", "C", "D")
+        self.meuGrafo.adicionaAresta("15", "D", "E")
+        self.meuGrafo.adicionaAresta("16", "B", "D")
+        self.meuGrafo.adicionaAresta("17", "B", "E")
 
     def test_adiciona_aresta(self):
         self.assertTrue(self.g_p.adicionaAresta('a10', 'J', 'C'))
@@ -241,6 +262,9 @@ class TestGrafo(unittest.TestCase):
         self.assertEqual(set(self.g_c2.dfs('Nina').A.keys()), set(['amiga']))
         self.assertEqual(set(self.g_c2.dfs('Maria').A.keys()), set(['amiga']))
 
+        self.assertEqual(set(self.meuGrafo.dfs('A').A.keys()), set(['1', '11', '10', '9', '4', '5', '7', '13', '14', '15']))
+        self.assertEqual(set(self.meuGrafo.dfs('D').A.keys()), set(['14', '13', '1', '2', '4', '5', '7', '9', '10', '17']))
+
     def test_bfs(self):
         self.assertEqual(set(self.g_p.bfs('J').A.keys()), set(['a1', 'a2', 'a4', 'a6', 'a7', 'a9']))
         self.assertEqual(set(self.g_p.bfs('C').A.keys()), set(['a1', 'a2', 'a4', 'a6', 'a7', 'a9']))
@@ -265,3 +289,5 @@ class TestGrafo(unittest.TestCase):
 
         self.assertEqual(set(self.g_c2.bfs('Nina').A.keys()), set(['amiga']))
         self.assertEqual(set(self.g_c2.bfs('Maria').A.keys()), set(['amiga']))
+
+        self.assertEqual(set(self.meuGrafo.bfs('A').A.keys()), set(['1', '2', '3', '11', '13', '16', '17', '4', '8', '9']))
